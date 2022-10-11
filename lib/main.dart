@@ -1,7 +1,10 @@
+import 'package:english_memory_app/packages/quote/quote.dart';
 import 'package:english_memory_app/screens/landing_screen.dart';
 import 'package:flutter/material.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Quotes().getAll();
   runApp(const MyApp());
 }
 

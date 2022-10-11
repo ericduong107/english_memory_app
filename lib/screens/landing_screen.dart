@@ -10,6 +10,10 @@ class LandingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    /**
+     * Ẩn thanh trạng thái ngày giờ, dung lượng pin
+     * và ẩn các nút home, back, task view
+     */
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
     return Scaffold(
       backgroundColor: AppColors.primaryColor,
