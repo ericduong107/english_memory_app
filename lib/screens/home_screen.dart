@@ -211,11 +211,31 @@ class _HomeScreenState extends State<HomeScreen> {
                     ? '"${words[index].author!}"'
                     : authorDefault;
 
-                return cardWidget(
-                    firstLetter: firstLetter,
-                    leftLetter: leftLetter,
-                    quote: quote,
-                    author: author);
+                return Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Material(
+                    borderRadius: const BorderRadius.all(Radius.circular(12)),
+                    color: AppColors.primaryColor,
+                    elevation: 4,
+                    child: InkWell(
+                      onDoubleTap: () {
+                        setState(() {
+                          words[index].isFavorite = !words[index].isFavorite;
+                        });
+                      },
+                      borderRadius: const BorderRadius.all(Radius.circular(12)),
+                      splashColor: Colors.transparent,
+                      child: cardWidget(
+                          firstLetter: firstLetter,
+                          leftLetter: leftLetter,
+                          quote: quote,
+                          author: author,
+                          favoriteColor: words[index].isFavorite
+                              ? Colors.red
+                              : Colors.white),
+                    ),
+                  ),
+                );
               },
             ),
           ),
@@ -247,54 +267,44 @@ class _HomeScreenState extends State<HomeScreen> {
     required String leftLetter,
     required String quote,
     required String author,
+    required Color favoriteColor,
   }) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Container(
-        padding: const EdgeInsets.all(16.0),
-        decoration: BoxDecoration(
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.shadowColor,
-              offset: const Offset(0, 4),
-              blurRadius: 4,
+    return Container(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            alignment: Alignment.centerRight,
+            child: Image.asset(
+              AppAssets.heart,
+              color: favoriteColor,
             ),
-          ],
-          color: AppColors.primaryColor,
-          borderRadius: const BorderRadius.all(Radius.circular(12)),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              alignment: Alignment.centerRight,
-              child: Image.asset(AppAssets.heart),
+          ),
+          cardTitle(firstLetter: firstLetter, leftLetter: leftLetter),
+          Padding(
+            padding: const EdgeInsets.only(top: 24.0),
+            child: AutoSizeText(
+              quote,
+              style: AppStyle.h4
+                  .copyWith(color: AppColors.textColor, letterSpacing: 1),
+              maxLines: 7,
+              overflow: TextOverflow.fade,
+              maxFontSize: 26,
             ),
-            cardTitle(firstLetter: firstLetter, leftLetter: leftLetter),
-            Padding(
-              padding: const EdgeInsets.only(top: 24.0),
-              child: AutoSizeText(
-                quote,
-                style: AppStyle.h4
-                    .copyWith(color: AppColors.textColor, letterSpacing: 1),
-                maxLines: 7,
-                overflow: TextOverflow.fade,
-                maxFontSize: 26,
-              ),
+          ),
+          Container(
+            padding: const EdgeInsets.all(14),
+            alignment: Alignment.bottomRight,
+            child: Text(
+              "- $author",
+              style: GoogleFonts.sen(
+                  fontWeight: FontWeight.w400,
+                  color: AppColors.textColor,
+                  fontSize: 20),
             ),
-            Container(
-              padding: const EdgeInsets.all(14),
-              alignment: Alignment.bottomRight,
-              child: Text(
-                "- $author",
-                style: GoogleFonts.sen(
-                    fontWeight: FontWeight.w400,
-                    color: AppColors.textColor,
-                    fontSize: 20),
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
