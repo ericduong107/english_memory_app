@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:english_memory_app/models/english_today.dart';
 import 'package:english_memory_app/packages/quote/quote.dart';
 import 'package:english_memory_app/packages/quote/quote_model.dart';
+import 'package:english_memory_app/screens/all_words_screen.dart';
 import 'package:english_memory_app/screens/control_screen.dart';
 import 'package:english_memory_app/values/app_assets.dart';
 import 'package:english_memory_app/values/app_colors.dart';
@@ -13,6 +14,7 @@ import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -217,22 +219,24 @@ class _HomeScreenState extends State<HomeScreen> {
               },
             ),
           ),
-          SizedBox(
-            height: size.height * 1 / 20,
-            child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 24),
-              alignment: Alignment.center,
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              child: ListView.builder(
-                physics: const NeverScrollableScrollPhysics(),
-                scrollDirection: Axis.horizontal,
-                itemCount: 5,
-                itemBuilder: (context, index) {
-                  return buildIndicator(index == _currentIndex, size);
-                },
-              ),
-            ),
-          ),
+          _currentIndex >= 5
+              ? buildShowMore()
+              : SizedBox(
+                  height: size.height * 1 / 20,
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 24),
+                    alignment: Alignment.center,
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    child: ListView.builder(
+                      physics: const NeverScrollableScrollPhysics(),
+                      scrollDirection: Axis.horizontal,
+                      itemCount: 5,
+                      itemBuilder: (context, index) {
+                        return buildIndicator(index == _currentIndex, size);
+                      },
+                    ),
+                  ),
+                ),
         ],
       ),
     );
@@ -269,12 +273,13 @@ class _HomeScreenState extends State<HomeScreen> {
             cardTitle(firstLetter: firstLetter, leftLetter: leftLetter),
             Padding(
               padding: const EdgeInsets.only(top: 24.0),
-              child: Text(
+              child: AutoSizeText(
                 quote,
                 style: AppStyle.h4
                     .copyWith(color: AppColors.textColor, letterSpacing: 1),
                 maxLines: 7,
-                overflow: TextOverflow.ellipsis,
+                overflow: TextOverflow.fade,
+                maxFontSize: 26,
               ),
             ),
             Container(
@@ -327,7 +332,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget buildIndicator(bool isActive, Size size) {
-    return Container(
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
       height: 8,
       margin: const EdgeInsets.symmetric(horizontal: 16),
       width: isActive ? size.width * 1 / 5 : 24,
@@ -337,6 +343,32 @@ class _HomeScreenState extends State<HomeScreen> {
         boxShadow: const [
           BoxShadow(color: Colors.black38, offset: Offset(2, 3), blurRadius: 3),
         ],
+      ),
+    );
+  }
+
+  Widget buildShowMore() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 24),
+      alignment: Alignment.centerLeft,
+      child: Material(
+        color: AppColors.primaryColor,
+        elevation: 5,
+        borderRadius: const BorderRadius.all(Radius.circular(24)),
+        child: InkWell(
+          onTap: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (_) => AllWordsScreen(words: words)));
+          },
+          splashColor: Colors.black38,
+          borderRadius: const BorderRadius.all(Radius.circular(24)),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+            child: Text("Show more", style: AppStyle.h5),
+          ),
+        ),
       ),
     );
   }
