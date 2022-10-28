@@ -1,4 +1,5 @@
 import 'package:english_memory_app/screens/home_screen.dart';
+import 'package:english_memory_app/ultilities/custom_page_route.dart';
 import 'package:english_memory_app/values/app_assets.dart';
 import 'package:english_memory_app/values/app_colors.dart';
 import 'package:english_memory_app/values/app_styles.dart';
@@ -59,11 +60,8 @@ class LandingScreen extends StatelessWidget {
                   fillColor: AppColors.lightBlue,
                   shape: const CircleBorder(),
                   onPressed: () {
-                    Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const HomeScreen(),
-                      ),
+                    Navigator.of(context).pushAndRemoveUntil(
+                      FadeRoute(page: const HomeScreen()),
                       (route) => false,
                     );
                   },

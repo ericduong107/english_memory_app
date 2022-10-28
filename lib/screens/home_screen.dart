@@ -5,6 +5,10 @@ import 'package:english_memory_app/packages/quote/quote.dart';
 import 'package:english_memory_app/packages/quote/quote_model.dart';
 import 'package:english_memory_app/screens/all_words_screen.dart';
 import 'package:english_memory_app/screens/control_screen.dart';
+import 'package:english_memory_app/screens/favorites_screen.dart';
+import 'package:english_memory_app/screens/landing_screen.dart';
+import 'package:english_memory_app/screens/search_screen.dart';
+import 'package:english_memory_app/ultilities/custom_page_route.dart';
 import 'package:english_memory_app/values/app_assets.dart';
 import 'package:english_memory_app/values/app_colors.dart';
 import 'package:english_memory_app/values/app_styles.dart';
@@ -13,6 +17,7 @@ import 'package:english_memory_app/widgets/app_button.dart';
 import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:like_button/like_button.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 
@@ -113,7 +118,8 @@ class _HomeScreenState extends State<HomeScreen> {
               child: AppButton(
                 label: "Favorite",
                 opTap: () {
-                  print("Favorite");
+                  Navigator.of(context)
+                      .push(SlideRightRoute(page: const FavoritesScreen()));
                 },
               ),
             ),
@@ -122,8 +128,18 @@ class _HomeScreenState extends State<HomeScreen> {
               child: AppButton(
                 label: "Your control",
                 opTap: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (_) => const ControlScreen()));
+                  Navigator.of(context)
+                      .push(SlideRightRoute(page: const ControlScreen()));
+                },
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 24),
+              child: AppButton(
+                label: "Log out",
+                opTap: () {
+                  Navigator.of(context).pushReplacement(
+                      SlideRightRoute(page: const LandingScreen()));
                 },
               ),
             ),
@@ -160,6 +176,19 @@ class _HomeScreenState extends State<HomeScreen> {
         },
         child: Image.asset(AppAssets.menu),
       ),
+      actions: [
+        InkWell(
+          onTap: () {
+            Navigator.of(context)
+                .push(SlideLeftRoute(page: const SearchScreen()));
+          },
+          child: Image.asset(
+            AppAssets.search,
+            width: 35,
+          ),
+        ),
+        const SizedBox(width: 10),
+      ],
     );
   }
 
@@ -188,7 +217,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 });
               },
               controller: _pageController,
-              itemCount: words.length,
+              itemCount: words.length > 5 ? 6 : words.length,
               itemBuilder: (context, index) {
                 String firstLetter =
                     words[index].noun != null ? words[index].noun! : "";
@@ -218,21 +247,23 @@ class _HomeScreenState extends State<HomeScreen> {
                     color: AppColors.primaryColor,
                     elevation: 4,
                     child: InkWell(
-                      onDoubleTap: () {
-                        setState(() {
-                          words[index].isFavorite = !words[index].isFavorite;
-                        });
+                      onTap: () {
+                        // setState(() {
+                        //   words[index].isFavorite = !words[index].isFavorite;
+                        // });
+                        print("Detail: ${words[index].noun}");
                       },
                       borderRadius: const BorderRadius.all(Radius.circular(12)),
                       splashColor: Colors.transparent,
                       child: cardWidget(
-                          firstLetter: firstLetter,
-                          leftLetter: leftLetter,
-                          quote: quote,
-                          author: author,
-                          favoriteColor: words[index].isFavorite
-                              ? Colors.red
-                              : Colors.white),
+                        index,
+                        firstLetter: firstLetter,
+                        leftLetter: leftLetter,
+                        quote: quote,
+                        author: author,
+                        // favoriteColor:
+                        //     words[index].isFavorite ? Colors.red : Colors.white,
+                      ),
                     ),
                   ),
                 );
@@ -262,24 +293,52 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget cardWidget({
+  Widget cardWidget(
+    int index, {
     required String firstLetter,
     required String leftLetter,
     required String quote,
     required String author,
-    required Color favoriteColor,
+    // required Color favoriteColor,
   }) {
     return Container(
       padding: const EdgeInsets.all(16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            alignment: Alignment.centerRight,
-            child: Image.asset(
-              AppAssets.heart,
-              color: favoriteColor,
+          // Container(
+          //   alignment: Alignment.centerRight,
+          //   child: Image.asset(
+          //     AppAssets.heart,
+          //     color: favoriteColor,
+          //   ),
+          // ),
+          LikeButton(
+            onTap: (isLiked) async {
+              setState(() {
+                words[index].isFavorite = !words[index].isFavorite;
+              });
+              return words[index].isFavorite;
+            },
+            size: 42,
+            isLiked: words[index].isFavorite,
+            mainAxisAlignment: MainAxisAlignment.end,
+            circleColor: const CircleColor(
+                start: Color(0xff00ddff), end: Color(0xff0099cc)),
+            bubblesColor: const BubblesColor(
+              dotPrimaryColor: Color(0xff33b5e5),
+              dotSecondaryColor: Color(0xff0099cc),
             ),
+            likeBuilder: (bool isLiked) {
+              return Container(
+                alignment: Alignment.centerRight,
+                child: ImageIcon(
+                  const AssetImage(AppAssets.heart),
+                  color: isLiked ? Colors.red : Colors.white,
+                  size: 42,
+                ),
+              );
+            },
           ),
           cardTitle(firstLetter: firstLetter, leftLetter: leftLetter),
           Padding(
@@ -367,10 +426,8 @@ class _HomeScreenState extends State<HomeScreen> {
         borderRadius: const BorderRadius.all(Radius.circular(24)),
         child: InkWell(
           onTap: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (_) => AllWordsScreen(words: words)));
+            Navigator.of(context)
+                .push(SlideLeftRoute(page: AllWordsScreen(words: words)));
           },
           splashColor: Colors.black38,
           borderRadius: const BorderRadius.all(Radius.circular(24)),
