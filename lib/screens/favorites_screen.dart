@@ -1,9 +1,7 @@
-import 'package:english_memory_app/models/english_today.dart';
 import 'package:english_memory_app/values/app_assets.dart';
 import 'package:english_memory_app/values/app_colors.dart';
 import 'package:english_memory_app/values/app_styles.dart';
 import 'package:flutter/material.dart';
-import 'package:auto_size_text/auto_size_text.dart';
 
 class FavoritesScreen extends StatelessWidget {
   // final List<EnglishToday> words;

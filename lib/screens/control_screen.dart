@@ -40,7 +40,7 @@ class _ControlScreenState extends State<ControlScreen> {
   }
 
   Widget main() {
-    return Container(
+    return SizedBox(
       width: double.infinity,
       child: Column(
         children: [

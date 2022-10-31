@@ -180,7 +180,7 @@ class _HomeScreenState extends State<HomeScreen> {
         InkWell(
           onTap: () {
             Navigator.of(context)
-                .push(SlideLeftRoute(page: const SearchScreen()));
+                .push(SlideLeftRoute(page: SearchScreen(listWords: words)));
           },
           child: Image.asset(
             AppAssets.search,
@@ -194,7 +194,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget main() {
     Size size = MediaQuery.of(context).size;
-    return Container(
+    return SizedBox(
       width: double.infinity,
       child: Column(
         children: [
@@ -208,7 +208,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   .copyWith(fontSize: 12, color: AppColors.textColor),
             ),
           ),
-          Container(
+          SizedBox(
             height: size.height * 2 / 3,
             child: PageView.builder(
               onPageChanged: (index) {
@@ -251,6 +251,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         // setState(() {
                         //   words[index].isFavorite = !words[index].isFavorite;
                         // });
+                        // ignore: avoid_print
                         print("Detail: ${words[index].noun}");
                       },
                       borderRadius: const BorderRadius.all(Radius.circular(12)),
